@@ -3,9 +3,9 @@ let moment = require('moment')
 let keys = require("./keys.js");
 let Spotify = require('node-spotify-api');
 let fs = require('fs');
-
-let userInput = process.argv[2].toLowerCase();
-let userQuery = process.argv[3];
+let processVars = process.argv.slice(2);
+let userInput = processVars.slice(0,1).join();
+let userQuery = processVars.slice(1).join(" ");
 
 let spotify = new Spotify({
   id:keys.SPOTIFY_ID,
