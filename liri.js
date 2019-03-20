@@ -1,9 +1,8 @@
 let axios = require('axios');
+let moment = require('moment')
 let keys = require("./keys.js");
 let Spotify = require('node-spotify-api');
 let fs = require('fs');
-
-console.log(keys);
 
 let userInput = process.argv[2].toLowerCase();
 let userQuery = process.argv[3];
@@ -32,7 +31,7 @@ const concertThis = function() {
         function(response) {
             console.log(`
                 ${userQuery} 's Next Gig is
-                ${response.data[0].datetime}
+                ${moment(response.data[0].datetime).format("MMM Do YYYY")}; 
                 at
                 ${response.data[0].venue.name}
                 in
@@ -49,7 +48,7 @@ const movieThis = function(){
     axios.get(`http://www.omdbapi.com/?t=${userQuery}&y=&plot=short&apikey=${keys.OMDB_KEY}`).then(
         function(response) {
             let actors = response.data.Actors.split(",").join(" ");
-            console.log(response.data);
+            // console.log(response.data);
             console.log(`
             Your search of ${userQuery} returned the film  - ${response.data.Title}
             made in: ${response.data.Year} from ${response.data.Country}
