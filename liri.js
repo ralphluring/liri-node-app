@@ -14,6 +14,10 @@ let spotify = new Spotify({
 });
  
 const spotifySearch = function(){
+    if(userQuery === ""){
+        userQuery = "random song";
+        console.log("for better results please enter a search term");
+    }
     spotify.search({ type: 'track', query: userQuery, limit:5 }, function(err, data) {
         if (err) {
           return console.log('Error occurred: ' + err);
@@ -40,9 +44,14 @@ const spotifySearch = function(){
     });
 }
 
-const concertThis = function() {
+const concertThis = function(userQuery) {
+  if(userQuery === ""){
+      userQuery = "yaeji";
+      console.log("for better results please enter a search term");
+  }
     axios.get("https://rest.bandsintown.com/artists/" + userQuery + "/events?app_id=" + keys.BAND_KEY).then(
         function(response) {
+           
             // console.log(response.data[0]);
             if(response.data[0] === undefined){
                 console.log(`
@@ -79,12 +88,16 @@ const concertThis = function() {
 };
 
 const movieThis = function(){
+    if(userQuery === ""){
+        userQuery = "terminator";
+        console.log("for better results please enter a search term");
+    }
     axios.get(`http://www.omdbapi.com/?t=${userQuery}&y=&plot=short&apikey=${keys.OMDB_KEY}`).then(
         function(response) {
-          
             let movieData = [];
             movieData.push(`Search Type ${userInput}`);
             movieData.push(`Search term ${userQuery}`);
+         
             movieData.push({
                 movietitle:response.data.Title,
                 year:response.data.Year,
@@ -92,12 +105,14 @@ const movieThis = function(){
                 country:response.data.Country,
                 actors:response.data.Actors,
                 plot:response.data.Plot,
-                ratings:[
-                    `${response.data.Ratings[0].Source}:${response.data.Ratings[0].Value}`,
-                    `${response.data.Ratings[1].Source}:${response.data.Ratings[1].Value}`
-                ]
+                ratings:[]
             });
-    
+
+            let ratingsArr = response.data.Ratings;
+            for(let i = 0; i < ratingsArr.length;i++){
+                let rating = ratingsArr[i].Source + " " + ratingsArr[i].Value;
+                movieData[2].ratings.push(rating);                
+            }
 
             let movieDataFormatted = JSON.stringify(movieData, null, 4) + "\n";
 
@@ -119,13 +134,19 @@ const doWhatItSays = function(){
     });
 }
 
+const err = function(userInput){
+    console.log(userInput + "is not a valid command");
+}
+
 if(userInput === "spotify-this-song"){
     spotifySearch();
 }else if(userInput === "concert-this"){
-    concertThis();
+    concertThis(userQuery);
 }else if(userInput === "movie-this"){
     movieThis();
 }else if(userInput === "do-what-it-says"){
     doWhatItSays();
+}else{
+    err(userInput);
 }
 
